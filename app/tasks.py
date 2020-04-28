@@ -1,8 +1,8 @@
 from django.conf import settings
 
 from celery import task
+import json
 from moviepy.editor import *
-import pytube
 import pytube
 import redis
 
@@ -16,11 +16,11 @@ def downloader_video(self, task_id, video_url):
     video = pytube.YouTube(video_url)
     print('Descargando video', video_url)
     video.streams.filter(file_extension='mp4').first().download('../media')
-    titulo = video.title.replace(',', 'mp4')
-    path = '../media{}.{}'.format(titulo,'mp4')
-    nuevo_path = '../media{}.{}'.format(titulo, 'mp3')
+    title = video.title.replace(',', 'mp4')
+    path = '../media/{}.{}'.format(title,'mp4')
+    new_path = 'media/{}.{}'.format(title, 'mp3')
     print('Convirtiendo video', video_url)
     video_mp4 = VideoFileClip(path)
-    video_mp4.audio.write_audiofile(nuevo_path)
+    video_mp4.audio.write_audiofile('../' + new_path)
     print('Guardado audio', video_url)
-    return redis_client.publish(task_id, json.dumps({'title': 'media/{titulo}.mp3'}))
+    return redis_client.publish(task_id, json.dumps({'download_url': new_path}))

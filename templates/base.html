@@ -58,7 +58,9 @@
         }
 
         socket.on('notify', (data) => {
-            console.log(JSON.parse(data))
+            data = JSON.parse(data)
+            console.log(`${location.protocol}//${location.host}/${data.download_url}`)
+	        location.href = `${location.protocol}//${location.host}/${data.download_url}`
         })
     </script>
   </body>

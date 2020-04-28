@@ -5,3 +5,4 @@ __pycache__
 logs
 static
 db.sqlite3
+.env

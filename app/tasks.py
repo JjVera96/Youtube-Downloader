@@ -16,7 +16,7 @@ def downloader_video(self, task_id, video_url):
     video = pytube.YouTube(video_url)
     print('Descargando video', video_url)
     video.streams.filter(file_extension='mp4').first().download('../media')
-    title = video.title.replace(',', 'mp4')
+    title = video.title.replace(',', '').replace('.', '').replace('/', '')
     path = '../media/{}.{}'.format(title,'mp4')
     new_path = 'media/{}.{}'.format(title, 'mp3')
     print('Convirtiendo video', video_url)

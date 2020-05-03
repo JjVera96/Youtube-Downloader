@@ -65,20 +65,19 @@
 
         socket.on('notify', (data) => {
             data = JSON.parse(data)
-            if(data.download_url){
-                socket.emit('unsubscribeTask', uuid)
-                downloadURI(`${location.protocol}//${location.host}/${data.download_url}`)
-                document.getElementById("video_url").value = ''
-                $('#log').append(
-                    $('<p>', {'text': 'Archivo descargado con éxito', class: 'text-success'})
-                )
-            }
+            console.log(data)
             if(data.response){
                 $('#log').append(
                     $('<p>', {'text': data.response, class: 'text-success'})
                 )
+                if(data.download_url){
+                    socket.emit('unsubscribeTask', uuid)
+                    downloadURI(`${location.protocol}//${location.host}/${data.download_url}`)
+                    document.getElementById("video_url").value = ''
+                }
             }
             if(data.error){
+                socket.emit('unsubscribeTask', uuid)
                 $('#log').append(
                     $('<p>', {'text': data.response, class: 'text-danger'})
                 )

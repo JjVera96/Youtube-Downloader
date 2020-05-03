@@ -12,15 +12,19 @@ redis_client = redis.StrictRedis.from_url(settings.BROKER_URL)
 
 @task(bind=True)
 def downloader_video(self, task_id, video_url):
-    print(video_url)
-    video = pytube.YouTube(video_url)
-    print('Descargando video', video_url)
-    video.streams.filter(file_extension='mp4').first().download('../media')
+    try:
+        video = pytube.YouTube(video_url)
+        video.streams.filter(file_extension='mp4').first().download('../media')
+        redis_client.publish(task_id, json.dumps({'response': 'Video descargado de Youtube'}))
+    except:
+        redis_client.publish(task_id, json.dumps({'error': 'Error al descargar video de Youtube'}))
     title = video.title.replace(',', '').replace('.', '').replace('/', '')
     path = '../media/{}.{}'.format(title,'mp4')
     new_path = 'media/{}.{}'.format(title, 'mp3')
-    print('Convirtiendo video', video_url)
-    video_mp4 = VideoFileClip(path)
-    video_mp4.audio.write_audiofile('../' + new_path)
-    print('Guardado audio', video_url)
+    try:
+        video_mp4 = VideoFileClip(path)
+        video_mp4.audio.write_audiofile('../' + new_path)
+        redis_client.publish(task_id, json.dumps({'response': 'Video convertido a MP3'}))
+    except:
+        redis_client.publish(task_id, json.dumps({'error': 'Error al convertir en MP3'}))
     return redis_client.publish(task_id, json.dumps({'download_url': new_path}))

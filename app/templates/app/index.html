@@ -12,11 +12,14 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon3">URL</span>
                     </div>
-                    <input type="text" class="form-control" id="video_url" placeholder="https://www.youtube.com/watch?v=UXbKG7CDpR4" aria-describedby="basic-addon3">
+                    <input type="text" class="form-control" id="video_url" aria-describedby="basic-addon3">
                 </div>
             </div>
             <div class="col-md-3 col-sm-12">
                 <button type="button" class="btn btn-dark m-1" onclick="downloadVideo()">Descargar</button>
+            </div>
+            <div id="log" class ="col-12">
+
             </div>
         </div>
     </div>
@@ -28,15 +31,15 @@
         let uuid
 
         let generateUUID = () => {
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-                return v.toString(16);
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+                var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8)
+                return v.toString(16)
             });
         }
 
         let downloadVideo = () => {
-            console.log('clic')
-            let video_url = document.getElementById("video_url").value;
+            $('#log').empty()
+            let video_url = document.getElementById("video_url").value
             uuid = generateUUID()
             data = {
                 'uuid': uuid,
@@ -47,13 +50,39 @@
                 url: "{% url 'download' %}",
                 type: 'GET',
                 data: {'data': JSON.stringify(data)}
-            }).then(res => console.log(res)).catch(err => console.error(err))
+            }).then(res => {
+                $('#log').append(
+                    $('<p>', {'text': 'Tarea comenzada con éxito', class: 'text-success'})
+                )
+            }).catch(err => console.error(err))
+        }
+
+        let downloadURI = (uri) => {
+            let a = $('<a>', {'download': true, href: uri}).appendTo('body')
+            a[0].click()
+            a.remove()
         }
 
         socket.on('notify', (data) => {
             data = JSON.parse(data)
-            console.log(`${location.protocol}//${location.host}/${data.download_url}`)
-            location.href = `${location.protocol}//${location.host}/${data.download_url}`
+            if(data.download_url){
+                socket.emit('unsubscribeTask', uuid)
+                downloadURI(`${location.protocol}//${location.host}/${data.download_url}`)
+                document.getElementById("video_url").value = ''
+                $('#log').append(
+                    $('<p>', {'text': 'Archivo descargado con éxito', class: 'text-success'})
+                )
+            }
+            if(data.response){
+                $('#log').append(
+                    $('<p>', {'text': data.response, class: 'text-success'})
+                )
+            }
+            if(data.error){
+                $('#log').append(
+                    $('<p>', {'text': data.response, class: 'text-danger'})
+                )
+            }
         })
     </script>
 {% endblock %}

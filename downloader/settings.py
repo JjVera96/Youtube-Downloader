@@ -17,7 +17,9 @@ import environ
 
 # Configuration environment
 root = environ.Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 env = environ.Env(DEBUG=(bool, False), )
+
 environ.Env.read_env()
 
 
@@ -29,10 +31,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'mr)y7@5g8avd5qdxetllc5b3$h!e$e*lg!1dfy*zv!$i75ff2z'
+SECRET_KEY = env('SECRET_KEY', default='mr)y7@5g8avd5qdxetllc5b3$h!e$e*lg!1dfy*zv!$i75ff2z')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG', default=True)
 
 ALLOWED_HOSTS = ['*']
 
@@ -46,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'app'
 ]
 
 MIDDLEWARE = [
@@ -112,7 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-CO'
 
 TIME_ZONE = 'UTC'
 
@@ -143,4 +146,5 @@ MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media')
 
 # CELERY
 BROKER_URL = env('BROKER_URL', default='redis://localhost:6379/0')
+
 NOTIFICATIONS_URL = env('NOTIFICATIONS_URL', default='localhost:3000')

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}MP3{% endblock %}
+{% block content %}
+    <div class="mt-3">
+        <div class="row  text-center">
+            <div class="col-12">
+                <h1>MP3</h1>
+                <p>Utiliza la URL del video de Youtube y descarga el audio en MP3 de dicho video.</p>
+            </div>
+            <div class="col-md-9 col-sm-12">        
+                <div class="input-group m-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon3">URL</span>
+                    </div>
+                    <input type="text" class="form-control" id="video_url" placeholder="https://www.youtube.com/watch?v=UXbKG7CDpR4" aria-describedby="basic-addon3">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-12">
+                <button type="button" class="btn btn-dark m-1" onclick="downloadVideo()">Descargar</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script>
+        const socket = io('{{ notifications_url }}')
+        let uuid
+
+        let generateUUID = () => {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+                return v.toString(16);
+            });
+        }
+
+        let downloadVideo = () => {
+            console.log('clic')
+            let video_url = document.getElementById("video_url").value;
+            uuid = generateUUID()
+            data = {
+                'uuid': uuid,
+                'video_url': video_url
+            }
+            socket.emit('subscribeTask', uuid)
+            $.ajax({
+                url: "{% url 'download' %}",
+                type: 'GET',
+                data: {'data': JSON.stringify(data)}
+            }).then(res => console.log(res)).catch(err => console.error(err))
+        }
+
+        socket.on('notify', (data) => {
+            data = JSON.parse(data)
+            console.log(`${location.protocol}//${location.host}/${data.download_url}`)
+            location.href = `${location.protocol}//${location.host}/${data.download_url}`
+        })
+    </script>
+{% endblock %}

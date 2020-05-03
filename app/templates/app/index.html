@@ -18,8 +18,8 @@
             <div class="col-md-3 col-sm-12">
                 <button type="button" class="btn btn-dark m-1" onclick="downloadVideo()">Descargar</button>
             </div>
+            <a id="archive" class="hidden" href="#" download></a>
             <div id="log" class ="col-12">
-
             </div>
         </div>
     </div>
@@ -58,9 +58,9 @@
         }
 
         let downloadURI = (uri) => {
-            let a = $('<a>', {'download': data.title, href: uri}).appendTo('body')
-            a[0].click()
-            a.remove()
+            let a = document.getElementById("archive")
+            a.href=uri
+            a.click()
         }
 
         socket.on('notify', (data) => {
@@ -79,7 +79,7 @@
             if(data.error){
                 socket.emit('unsubscribeTask', uuid)
                 $('#log').append(
-                    $('<p>', {'text': data.response, class: 'text-danger'})
+                    $('<p>', {'text': data.error, class: 'text-danger'})
                 )
             }
         })

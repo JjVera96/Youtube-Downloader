@@ -24,7 +24,7 @@ def downloader_video(self, task_id, video_url):
     try:
         video_mp4 = VideoFileClip(path)
         video_mp4.audio.write_audiofile('../' + new_path)
-        return redis_client.publish(task_id, json.dumps({'response': 'Video convertido a MP3', 'download_url': new_path, 'title': tile}))
+        return redis_client.publish(task_id, json.dumps({'response': 'Video convertido a MP3', 'download_url': new_path, 'title': title}))
     except:
         return redis_client.publish(task_id, json.dumps({'error': 'Error al convertir en MP3'}))
     

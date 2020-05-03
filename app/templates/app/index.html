@@ -58,7 +58,7 @@
         }
 
         let downloadURI = (uri) => {
-            let a = $('<a>', {'download': true, href: uri}).appendTo('body')
+            let a = $('<a>', {'download': data.title, href: uri}).appendTo('body')
             a[0].click()
             a.remove()
         }

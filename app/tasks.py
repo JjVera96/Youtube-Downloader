@@ -19,9 +19,9 @@ def downloader_video(self, task_id, video_url, video_format):
         redis_client.publish(task_id, json.dumps({'response': 'Video descargado de Youtube al servidor y en proceso de convertir'}))
     except:
         return redis_client.publish(task_id, json.dumps({'error': 'Error al descargar video de Youtube al servidor'}))
-    title = video.title.replace(',', '').replace('.', '').replace('/', '').replace('|', '')
-    path = '../media/{}.{}'.format(title,'mp4')
+    title = video.title.replace(',', '').replace('.', '').replace('/', '').replace('|', '').replace(':', '')
     if video_format == 'mp3':
+        path = '../media/{}.{}'.format(title,'mp4')
         new_path = 'media/{}.{}'.format(title, 'mp3')
         try:
             video_mp4 = VideoFileClip(path)
@@ -29,5 +29,6 @@ def downloader_video(self, task_id, video_url, video_format):
             return redis_client.publish(task_id, json.dumps({'response': 'Video convertido a MP3', 'download_url': new_path, 'title': title}))
         except:
             return redis_client.publish(task_id, json.dumps({'error': 'Error al convertir en MP3'}))
+    path = 'media/{}.{}'.format(title,'mp4')
     return redis_client.publish(task_id, json.dumps({'response': 'Video convertido a MP4', 'download_url': path, 'title': title}))
     

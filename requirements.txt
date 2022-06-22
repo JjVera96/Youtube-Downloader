@@ -12,7 +12,7 @@ imageio==2.8.0
 imageio-ffmpeg==0.4.1
 kombu==4.6.8
 moviepy==1.0.2
-numpy==1.18.3
+numpy==1.22.0
 Pillow==7.1.2
 proglog==0.1.9
 pytube3==9.6.4
